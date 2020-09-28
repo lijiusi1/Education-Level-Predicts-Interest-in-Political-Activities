@@ -1,0 +1,155 @@
+---
+title: "Education Level Predicts Interest in Political Activities"
+author: "Jiusi Li 1004591578"
+date: "2020/9/27"
+abstract: "Education Level influences people's views of the world, including political behaviors. In this paper, 2019 CES(Canadian Election Study) phone survey dataset is analyzed. It is found that there's a strong association between education level and interest in taking part in politial activities. The findings have implications for understanding the behavior of electorate and forecasting elections."
+output: html_document
+---
+
+# Introduction 
+
+In this paper, education level and interest in federal election of people are analyzed. The dataset is conducted by phone investigation of 2019 Canadian Election Study. It is found that people with high education level tend to have more interest in political activities. 
+
+This study focuses on 2 variables - education status and interest in federal election. In light of the survey data and corresponding graphs, both of the 2 variables are in high level. From these observated data, a hypothesis is raised that people with higher education background tend to be more interested in participating in political activities.
+
+3 sections-Data, Discussion and References are included below in the paper. In this study, data analysis is fundamental, and samples are not abundant. Future study is to set up mathematical regression models to precisely indicate the correlation of those two variables. 
+
+
+# Data
+
+```{r install, warning=FALSE, message=FALSE,results="hide"}
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages('skimr')
+library(skimr)
+#install.packages("devtools")
+#devtools::install_github("hodgettsp/cesR", force = TRUE)
+library(cesR)
+#cesR::get_cescodes()
+cesR::get_ces("ces2019_phone")
+```
+
+## Dataset description
+
+This dataset is about the 2019 Canadian Election Study. In this case, phone Survey was conducted to gather attitudes and opinions of Canadians during and after the 2019 federal election. The phone survey part of the study is available at https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8RHLG1.
+
+```{r}
+#head(ces2019_phone)
+```
+
+```{r, warning =FALSE, message=FALSE}
+#skimr::skim(ces2019_phone)
+```
+
+
+The focused variables in this paper are investigated people' interest in Federal election and their education status.
+
+
+```{r}
+ces2019_phone <-
+  ces2019_phone %>%
+  filter(q9 >= 0)
+
+ces2019_phone %>%
+  ggplot(aes(x = q9)) + 
+  geom_histogram(binwidth = 1) +
+  scale_x_continuous(breaks=seq(0, 10, 1)) +
+  labs(x = "Interest in Federal Election",
+       y = 'Number',
+       title = "Distribution of People' Interest in Federal Election in CES 2019",
+       caption = 'Data Source: Stephenson, Harell, Rubenson, Loewen, 2020.') +
+  theme_classic()
+```
+
+```{r}
+ces2019_phone %>%
+  summarize(
+    mean = mean(q9),
+    median = median(q9),
+    sd = sd(q9)
+ )
+```
+
+
+
+```{r message=FALSE}
+
+ces2019_phone <-
+  ces2019_phone %>%
+  filter(q61 >= 0)
+
+ces2019_phone %>%
+  ggplot(aes(x = q61)) + 
+  scale_x_continuous(breaks=seq(0, 11, 1)) +
+  labs(x = "Highest Level of Education",
+       y = 'Number',
+       title = "Distribution of Highest Level of Education in CES 2019",
+       caption = "1 No schooling
+                  2 Some elementary school
+                  3 Completed elementary school
+                  4 Some secondary / high school
+                  5 Completed secondary / high school
+                  6 Some technical, community college, CEGEP, College Classique
+                  7 Completed technical, community college, CEGEP, College Classique
+                  8 Some university
+                  9 Bachelor's degree
+                  10 Master's degree
+                  11 Professional degree or doctorate
+       Data Source: Stephenson, Harell, Rubenson, Loewen, 2020.") +
+  geom_histogram(binwidth = 1) +
+  theme_classic()
+
+ces2019_phone %>%
+  count(q61 >=5)
+```
+
+# Discussion
+
+As demonstrated in the first graph, the distribution of interest of surveyed people in Federal election is skewed to the left. The calculated mean and median are 7.43 and 8 out of 10 respectively, which illustrates that investigated people have relatively high interest in Federal election activity.
+
+In terms of education level, investigated people tend to be highly educated. Specifically, 3753 out of 4001 (93.8%) people have experienced education higher than high school.
+
+Based on observation above, a hypothesis is raised that people with higher education background tend to be more interested in participating in political activities.
+
+## Restriction and Weaknesses
+
+This CES survey is conducted merely by phone, which means that the responses of people with no phones or people who are not willing to take surveys on phones are not taken into consideration. The results are limited in responses of people who have time and have willingness to take part in phone survey.
+
+The primary weakness of the study is that only 2 variables are selected and analyzed. People's interest in political activities are determined by multi-factors - education level is just one posible dependent variable.
+
+On the other hand, only basic statistical summaries and graphs are presented in the analysis. Scientific analysis including mathematical models are supposed to be conducted in order to make the analysis more credible and convincing.
+
+In addition, surveyed people who response 'No idea' or 'Refused' are not counted in the study, which can influence the result slightly.
+
+Last but not least, there's no comparison group in the study. Data associated to groups with relatively low education level are not sufficient.
+
+## Future Study
+
+Future study is to build linear regression model and check correlation of the two variables - education level and passion in political activities.
+
+Meanwhile, more variables should be added for sake of preciseness. 
+
+```{r echo=FALSE}
+#install.packages('visdat')
+#library(visdat)
+#visdat::vis_dat(ces2019_phone)
+##This is a bad try.
+```
+
+# References
+
+- Laura B Stephenson, Allison Harell, Daniel Rubenson and Peter John Loewen (2020). '2019 Canadian Election Study - Phone Survey'. https://doi.org/10.7910/DVN/8RHLG1, Harvard Dataverse, V1, UNF:6:eyR28qaoYlHj9qwPWZmmVQ== [fileUNF]
+
+- Laura B Stephenson, Allison Harell, Daniel Rubenson and Peter John Loewen. Forthcoming. 'Measuring Preferences and Behaviour in the 2019 Canadian Election Study,' Canadian Journal of Political Science. https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8RHLG1
+
+- R Core Team (2020). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+
+- JJ Allaire and Yihui Xie and Jonathan McPherson and Javier Luraschi and Kevin Ushey and Aron Atkins and Hadley Wickham and Joe Cheng and Winston Chang and Richard Iannone (2020). rmarkdown: Dynamic Documents for R. R package version 2.3. URL https://rmarkdown.rstudio.com.
+
+- Yihui Xie and J.J. Allaire and Garrett Grolemund (2018). R Markdown: The Definitive Guide. Chapman and Hall/CRC. ISBN 9781138359338. URL https://bookdown.org/yihui/rmarkdown.
+
+- Paul A. Hodgetts and Rohan Alexander (2020). cesR: Access the CES Datasets a Little Easier.. R package version 0.1.0.
+  
+- Hadley Wickham, Jim Hester and Winston Chang (2020). devtools: Tools to Make Developing R Packages Easier. R package version 2.3.2. https://CRAN.R-project.org/package=devtools
+
+
